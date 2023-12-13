@@ -54,6 +54,7 @@ case "$1" in
     echo "Commands:"
     echo "  add <task>"
     echo "  show"
+    echo "  summary"
     echo "  help"
     ;;
   add)
@@ -65,6 +66,43 @@ case "$1" in
     ;;
   show)
     show_tasks
+    ;;
+  summary)
+    awk -F'\t' '
+      BEGIN {
+        last_time = 0
+        last_task = ""
+      }
+      {
+        if (last_time != 0) {
+          current_time = $1
+          duration = current_time - last_time
+
+          tasks[last_task] += duration
+        }
+        last_time = $1
+        last_task = $2
+      }
+      END {
+        current_time = systime()
+        duration = current_time - last_time
+        tasks[last_task] += duration
+
+        total = 0
+        for (task in tasks) {
+          total += tasks[task]
+        }
+
+        for (task in tasks) {
+          printf "%14s", task
+
+          printf " "
+          printf "%s", strftime("%H:%M:%S", tasks[task], 1)
+          printf " "
+          printf "%4.1f%%", tasks[task] / total * 100
+          printf "\n"
+        }
+      }' "$filename"
     ;;
   *)
     echo "Invalid command"
