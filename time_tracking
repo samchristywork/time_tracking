@@ -1,0 +1,19 @@
+#!/bin/bash
+
+filename="./time_tracking.txt"
+
+if [ $# -eq 0 ]; then
+  exit 0
+fi
+
+case "$1" in
+  help)
+    echo "Usage: $0 <command>"
+    echo "Commands:"
+    echo "  help"
+    ;;
+  *)
+    echo "Invalid command"
+    exit 1
+    ;;
+esac
