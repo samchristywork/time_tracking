@@ -10,6 +10,20 @@ function seconds_to_time {
   printf "%02d:%02d:%02d" $hours $minutes $seconds
 }
 
+function print_task {
+  last_task_time="$1"
+  current_task_time="$2"
+  task_name="$3"
+  duration=$((current_task_time-last_task_time))
+
+  printf "%s" "$(date -d "@$last_task_time" +%F\ %T)"
+  printf "  "
+  printf "%s" "$(seconds_to_time $duration)"
+  printf "  "
+  printf "%s" "$task_name"
+  echo
+}
+
 if [ $# -eq 0 ]; then
   exit 0
 fi
