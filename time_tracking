@@ -55,6 +55,7 @@ case "$1" in
     echo "  add <task>"
     echo "  show"
     echo "  summary"
+    echo "  last"
     echo "  help"
     ;;
   add)
@@ -103,6 +104,17 @@ case "$1" in
           printf "\n"
         }
       }' "$filename"
+    ;;
+  last)
+    last_line=$(tail -n 1 "$filename")
+    last_task_time=$(echo "$last_line" | cut -f1)
+    last_task_name=$(echo "$last_line" | cut -f2-)
+    duration=$(( $(date +%s) - last_task_time ))
+
+    printf "%s" "$last_task_name"
+    printf " "
+    printf "%s" "$(seconds_to_time $duration)"
+    echo
     ;;
   *)
     echo "Invalid command"
