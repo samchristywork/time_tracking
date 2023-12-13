@@ -44,6 +44,7 @@ function show_tasks {
 }
 
 if [ $# -eq 0 ]; then
+  show_tasks
   exit 0
 fi
 
@@ -51,7 +52,19 @@ case "$1" in
   help)
     echo "Usage: $0 <command>"
     echo "Commands:"
+    echo "  add <task>"
+    echo "  show"
     echo "  help"
+    ;;
+  add)
+    if [ $# -ne 2 ]; then
+      echo "Usage: $0 add <task>"
+      exit 1
+    fi
+    echo "$(date +%s)	$2" >> "$filename"
+    ;;
+  show)
+    show_tasks
     ;;
   *)
     echo "Invalid command"
