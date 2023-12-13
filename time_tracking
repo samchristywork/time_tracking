@@ -24,6 +24,25 @@ function print_task {
   echo
 }
 
+function show_tasks {
+  last_task_time=""
+  last_task_name=""
+
+  while read -r line; do
+    new_task_time=$(echo "$line" | cut -f1)
+    new_task_name=$(echo "$line" | cut -f2-)
+
+    if [ -n "$last_task_time" ]; then
+      print_task "$last_task_time" "$new_task_time" "$last_task_name"
+    fi
+
+    last_task_time="$new_task_time"
+    last_task_name="$new_task_name"
+  done < "$filename"
+
+  print_task "$last_task_time" "$(date +%s)" "$last_task_name"
+}
+
 if [ $# -eq 0 ]; then
   exit 0
 fi
