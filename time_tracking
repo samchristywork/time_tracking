@@ -79,6 +79,10 @@ case "$1" in
 
     echo "Summary since $(date -d "@$cutoff" +%F\ %T):"
 
+    waste='youtube';
+    good='work|programming|exercise|read|social|clean|org';
+    ignore='sleep';
+
     awk -F'\t' -v cutoff="$cutoff" '
       BEGIN {
         last_time = 0
@@ -102,7 +106,11 @@ case "$1" in
         last_task = $2
       }
       END {
-        ignore_tasks = "sleep"
+        waste = 0
+        good = 0
+        waste_tasks = "'"$waste"'"
+        good_tasks = "'"$good"'"
+        ignore_tasks = "'"$ignore"'"
         current_time = systime()
         duration = current_time - last_time
         tasks[last_task] += duration
