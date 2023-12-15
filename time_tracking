@@ -54,7 +54,7 @@ case "$1" in
     echo "Commands:"
     echo "  add <task>"
     echo "  show"
-    echo "  summary"
+    echo "  summary <date> (default: today, e.g. 15 minutes ago, 10:00, etc...)"
     echo "  last"
     echo "  edit"
     echo "  watch"
@@ -71,7 +71,15 @@ case "$1" in
     show_tasks
     ;;
   summary)
-    awk -F'\t' '
+    cutoff=$(date +%s -d "today 00:00")
+
+    if [ $# -eq 2 ]; then
+      cutoff=$(date +%s -d "$2")
+    fi
+
+    echo "Summary since $(date -d "@$cutoff" +%F\ %T):"
+
+    awk -F'\t' -v cutoff="$cutoff" '
       BEGIN {
         last_time = 0
         last_task = ""
@@ -81,7 +89,14 @@ case "$1" in
           current_time = $1
           duration = current_time - last_time
 
-          tasks[last_task] += duration
+          if (last_time > cutoff && current_time > cutoff) {
+            tasks[last_task] += duration
+          } else if (last_time < cutoff && current_time > cutoff) {
+            tasks[last_task] += current_time - cutoff
+          } else if (last_time > cutoff && current_time < cutoff) {
+            tasks[last_task] += cutoff - last_time
+          } else {
+          }
         }
         last_time = $1
         last_task = $2
