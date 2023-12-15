@@ -57,7 +57,7 @@ case "$1" in
     echo "  summary <date> (default: today, e.g. 15 minutes ago, 10:00, etc...)"
     echo "  last"
     echo "  edit"
-    echo "  watch"
+    echo "  watch <n>"
     echo "  help"
     ;;
   add)
@@ -139,7 +139,11 @@ case "$1" in
   watch)
     n=1
 
-    watch -c "$0 summary"
+    if [ $# -eq 2 ]; then
+      n="$2"
+    fi
+
+    watch -c -n "$n" "$0 summary"
     ;;
   *)
     echo "Invalid command"
