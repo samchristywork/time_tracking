@@ -134,7 +134,12 @@ case "$1" in
             continue
           }
 
-          printf " "
+          if (task == last_task) {
+            printf "> "
+          }else {
+            printf "  "
+          }
+
           printf "%s", strftime("%H:%M:%S", tasks[task], 1)
           printf " "
           printf "%4.1f%%", tasks[task] / total * 100
