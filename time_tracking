@@ -111,8 +111,9 @@ case "$1" in
           total += tasks[task]
         }
 
-        for (task in tasks) {
-          printf "%14s", task
+        n=asorti(tasks, sorted_tasks)
+        for (task in sorted_tasks) {
+          task = sorted_tasks[task]
 
           printf " "
           printf "%s", strftime("%H:%M:%S", tasks[task], 1)
