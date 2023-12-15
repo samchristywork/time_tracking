@@ -128,8 +128,10 @@ case "$1" in
           task = sorted_tasks[task]
           if(match(task, waste_tasks)) {
             printf "\033[0;31m"
+            waste += tasks[task]
           } else if(match(task, good_tasks)) {
             printf "\033[0;32m"
+            good += tasks[task]
           } else if(match(task, ignore_tasks)) {
             continue
           }
@@ -143,8 +145,14 @@ case "$1" in
           printf "%s", strftime("%H:%M:%S", tasks[task], 1)
           printf " "
           printf "%4.1f%%", tasks[task] / total * 100
-          printf "\n"
+          printf " "
+          printf "%s", task
+          printf "\033[0m\n"
         }
+
+        print ""
+        printf "Waste: %s (%4.1f%%)\n", strftime("%H:%M:%S", waste, 1), waste / total * 100
+        printf "Good:  %s (%4.1f%%)\n", strftime("%H:%M:%S", good, 1), good / total * 100
       }' "$filename"
     ;;
   last)
