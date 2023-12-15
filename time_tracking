@@ -102,12 +102,16 @@ case "$1" in
         last_task = $2
       }
       END {
+        ignore_tasks = "sleep"
         current_time = systime()
         duration = current_time - last_time
         tasks[last_task] += duration
 
         total = 0
         for (task in tasks) {
+          if (match(task, ignore_tasks)) {
+            continue
+          }
           total += tasks[task]
         }
 
