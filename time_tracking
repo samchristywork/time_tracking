@@ -126,6 +126,13 @@ case "$1" in
         n=asorti(tasks, sorted_tasks)
         for (task in sorted_tasks) {
           task = sorted_tasks[task]
+          if(match(task, waste_tasks)) {
+            printf "\033[0;31m"
+          } else if(match(task, good_tasks)) {
+            printf "\033[0;32m"
+          } else if(match(task, ignore_tasks)) {
+            continue
+          }
 
           printf " "
           printf "%s", strftime("%H:%M:%S", tasks[task], 1)
