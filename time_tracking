@@ -82,6 +82,7 @@ function show_tasks {
   if [ -n "$pattern" ]; then
     printf "Matched: %s\n" "$(seconds_to_time $matched_time)"
     printf "Percent: %s%%\n" "$((matched_time*100/total_time))"
+    printf "Per day: %s\n" "$(seconds_to_time $((matched_time*86400/total_time)))"
   fi
 }
 
