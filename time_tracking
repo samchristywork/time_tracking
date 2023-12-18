@@ -95,13 +95,14 @@ case "$1" in
   help)
     echo "Usage: $0 <command>"
     echo "Commands:"
-    echo "  add <task>"
-    echo "  show"
+    echo "  add <task> - add a new task"
+    echo "  show - show all tasks"
+    echo "  search <pattern> - search for a task"
     echo "  summary <date> (default: today, e.g. 15 minutes ago, 10:00, etc...)"
-    echo "  last"
-    echo "  edit"
-    echo "  watch <n>"
-    echo "  help"
+    echo "  last - show last task"
+    echo "  edit - edit the task file"
+    echo "  watch <n> - watch the task file for changes"
+    echo "  help - show this help"
     ;;
   add)
     if [ $# -ne 2 ]; then
