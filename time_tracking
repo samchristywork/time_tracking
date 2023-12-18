@@ -113,6 +113,14 @@ case "$1" in
   show)
     show_tasks
     ;;
+  search)
+    if [ $# -ne 2 ]; then
+      echo "Usage: $0 search <pattern>"
+      exit 1
+    fi
+
+    show_tasks "$2"
+    ;;
   summary)
     cutoff=$(date +%s -d "today 00:00")
 
