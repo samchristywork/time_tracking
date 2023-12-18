@@ -7,6 +7,13 @@ function seconds_to_time {
   hours=$((seconds/3600))
   minutes=$((seconds%3600/60))
   seconds=$((seconds%60))
+
+  if [ $hours -gt 24 ]; then
+    days=$((hours/24))
+    hours=$((hours%24))
+    printf "%d:" $days
+  fi
+
   printf "%02d:%02d:%02d" $hours $minutes $seconds
 }
 
