@@ -32,6 +32,11 @@ function print_task {
 }
 
 function show_tasks {
+  pattern=""
+  if [ $# -eq 1 ]; then
+    pattern="$1"
+  fi
+
   last_task_time=""
   last_task_name=""
 
@@ -39,7 +44,14 @@ function show_tasks {
     new_task_time=$(echo "$line" | cut -f1)
     new_task_name=$(echo "$line" | cut -f2-)
 
-    if [ -n "$last_task_time" ]; then
+    matchespattern=1
+    if [ -n "$pattern" ]; then
+      if ! echo "$last_task_name" | grep -q "$pattern"; then
+        matchespattern=0
+      fi
+    fi
+
+    if [ -n "$last_task_time" ] && [ $matchespattern -eq 1 ]; then
       print_task "$last_task_time" "$new_task_time" "$last_task_name"
     fi
 
