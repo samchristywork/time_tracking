@@ -202,9 +202,11 @@ case "$1" in
           printf "\033[0m\n"
         }
 
-        print ""
-        printf "Waste: %s (%4.1f%%)\n", strftime("%H:%M:%S", waste, 1), waste / total * 100
-        printf "Good:  %s (%4.1f%%)\n", strftime("%H:%M:%S", good, 1), good / total * 100
+        if (total != 0) {
+          print ""
+          printf "Waste: %s (%4.1f%%)\n", strftime("%H:%M:%S", waste, 1), waste / total * 100
+          printf "Good:  %s (%4.1f%%)\n", strftime("%H:%M:%S", good, 1), good / total * 100
+        }
       }' "$filename"
     ;;
   last)
