@@ -173,8 +173,22 @@ case "$1" in
         good_tasks = "'"$good"'"
         ignore_tasks = "'"$ignore"'"
         current_time = systime()
+
         duration = current_time - last_time
-        tasks[last_task] += duration
+        slice_start = last_time
+        slice_end = slice_start + duration
+
+        if (slice_start < low_cutoff) {
+          slice_start = low_cutoff
+        }
+
+        if (slice_end > high_cutoff) {
+          slice_end = high_cutoff
+        }
+
+        if (slice_start < slice_end) {
+          tasks[last_task] += slice_end - slice_start
+        }
 
         total = 0
         for (task in tasks) {
