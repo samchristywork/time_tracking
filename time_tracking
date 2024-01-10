@@ -247,6 +247,11 @@ case "$1" in
   edit)
     $EDITOR "$filename"
     ;;
+  yesterday)
+    current_epoch=$(date +%s -d "today 00:00")
+    yesterday_epoch=$((current_epoch-86400))
+    $0 summary "$(date -d "@$yesterday_epoch" +%F)" "$(date -d "@$current_epoch" +%F)"
+    ;;
   watch)
     n=1
 
