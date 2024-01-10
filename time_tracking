@@ -64,7 +64,7 @@ function show_tasks {
 
     last_task_time="$new_task_time"
     last_task_name="$new_task_name"
-  done < "$filename"
+  done
 
   matchespattern=1
   if [ -n "$pattern" ]; then
@@ -87,7 +87,7 @@ function show_tasks {
 }
 
 if [ $# -eq 0 ]; then
-  show_tasks
+  show_tasks < "$filename"
   exit 0
 fi
 
@@ -112,7 +112,7 @@ case "$1" in
     echo "$(date +%s)	$2" >> "$filename"
     ;;
   show)
-    show_tasks
+    tail "$filename" | show_tasks
     ;;
   search)
     if [ $# -ne 2 ]; then
@@ -120,7 +120,7 @@ case "$1" in
       exit 1
     fi
 
-    show_tasks "$2"
+    show_tasks "$2" < "$filename"
     ;;
   summary)
     cutoff=$(date +%s -d "today 00:00")
