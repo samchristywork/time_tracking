@@ -1,6 +1,9 @@
 #!/bin/bash
 
 filename="./time_tracking.txt"
+waste='television|youtube';
+good='work|programming|exercise|read|social|clean|org|meditate';
+ignore='sleep';
 
 function seconds_to_time {
   seconds="$1"
@@ -123,19 +126,19 @@ case "$1" in
     show_tasks "$2" < "$filename"
     ;;
   summary)
-    cutoff=$(date +%s -d "today 00:00")
+    low_cutoff=$(date +%s -d "today 00:00")
+    high_cutoff=$(date +%s -d "now")
 
     if [ $# -eq 2 ]; then
-      cutoff=$(date +%s -d "$2")
+      low_cutoff=$(date +%s -d "$2")
+    elif [ $# -eq 3 ]; then
+      low_cutoff=$(date +%s -d "$2")
+      high_cutoff=$(date +%s -d "$3")
     fi
 
-    echo "Summary since $(date -d "@$cutoff" +%F\ %T):"
+    echo "Summary between $(date -d "@$low_cutoff" +%F\ %T) and $(date -d "@$high_cutoff" +%F\ %T):"
 
-    waste='television|youtube';
-    good='work|programming|exercise|read|social|clean|org';
-    ignore='sleep';
-
-    awk -F'\t' -v cutoff="$cutoff" '
+    awk -F'\t' -v low_cutoff="$low_cutoff" -v high_cutoff="$high_cutoff" '
       BEGIN {
         last_time = 0
         last_task = ""
@@ -143,15 +146,21 @@ case "$1" in
       {
         if (last_time != 0) {
           current_time = $1
-          duration = current_time - last_time
 
-          if (last_time > cutoff && current_time > cutoff) {
-            tasks[last_task] += duration
-          } else if (last_time < cutoff && current_time > cutoff) {
-            tasks[last_task] += current_time - cutoff
-          } else if (last_time > cutoff && current_time < cutoff) {
-            tasks[last_task] += cutoff - last_time
-          } else {
+          duration = current_time - last_time
+          slice_start = last_time
+          slice_end = slice_start + duration
+
+          if (slice_start < low_cutoff) {
+            slice_start = low_cutoff
+          }
+
+          if (slice_end > high_cutoff) {
+            slice_end = high_cutoff
+          }
+
+          if (slice_start < slice_end) {
+            tasks[last_task] += slice_end - slice_start
           }
         }
         last_time = $1
