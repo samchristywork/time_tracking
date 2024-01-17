@@ -1,9 +1,9 @@
 #!/bin/bash
 
 filename="./time_tracking.txt"
-waste='television|youtube';
-good='work|programming|exercise|read|social|clean|org|meditate';
-ignore='sleep';
+waste='_television_youtube_';
+good='_work_programming_exercise_read_social_clean_org_meditate_';
+ignore='_sleep_';
 
 function seconds_to_time {
   seconds="$1"
@@ -202,13 +202,13 @@ case "$1" in
         n=asorti(tasks, sorted_tasks)
         for (task in sorted_tasks) {
           task = sorted_tasks[task]
-          if(match(task, waste_tasks)) {
+          if(match(waste_tasks, "_"task"_")) {
             printf "\033[0;31m"
             waste += tasks[task]
-          } else if(match(task, good_tasks)) {
+          } else if(match(good_tasks, "_"task"_")) {
             printf "\033[0;32m"
             good += tasks[task]
-          } else if(match(task, ignore_tasks)) {
+          } else if(match(ignore_tasks, "_"task"_")) {
             continue
           }
 
