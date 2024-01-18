@@ -94,19 +94,24 @@ if [ $# -eq 0 ]; then
   exit 0
 fi
 
+function usage {
+  echo "Usage: $0 <command>"
+  echo "Commands:"
+  echo "  add <task> - add a new task"
+  echo "  show - show last ten tasks"
+  echo "  search <pattern> - search for a task"
+  echo "  summary <date> <date> - show summary for a date range"
+  echo "  last - show last task"
+  echo "  edit - edit the task file"
+  echo "  yesterday - show summary for yesterday"
+  echo "  preprocess - preprocess the task file"
+  echo "  watch <n> - watch the task file for changes"
+  echo "  help - show this help"
+}
+
 case "$1" in
   help)
-    echo "Usage: $0 <command>"
-    echo "Commands:"
-    echo "  add <task> - add a new task"
-    echo "  show - show last ten tasks"
-    echo "  search <pattern> - search for a task"
-    echo "  summary <date> <date> - show summary for a date range"
-    echo "  last - show last task"
-    echo "  edit - edit the task file"
-    echo "  yesterday - show summary for yesterday"
-    echo "  watch <n> - watch the task file for changes"
-    echo "  help - show this help"
+    usage
     ;;
   add)
     if [ $# -ne 2 ]; then
@@ -199,7 +204,7 @@ case "$1" in
           total += tasks[task]
         }
 
-        n=asorti(tasks, sorted_tasks)
+        n = asorti(tasks, sorted_tasks)
         for (task in sorted_tasks) {
           task = sorted_tasks[task]
           if(match(waste_tasks, "_"task"_")) {
@@ -263,6 +268,7 @@ case "$1" in
     ;;
   *)
     echo "Invalid command"
+    usage
     exit 1
     ;;
 esac
