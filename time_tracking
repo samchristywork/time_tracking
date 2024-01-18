@@ -274,7 +274,9 @@ case "$1" in
 
       duration_human_readable = strftime("%H:%M:%S", duration, 1)
 
-      print last_epoch, last_datetime, duration, duration_human_readable, last_task
+      if (last_epoch != 0) {
+        print last_epoch, last_datetime, duration, duration_human_readable, last_task
+      }
 
       last_epoch = epoch
       last_datetime = datetime
