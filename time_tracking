@@ -257,6 +257,40 @@ case "$1" in
     yesterday_epoch=$((current_epoch-86400))
     $0 summary "$(date -d "@$yesterday_epoch" +%F)" "$(date -d "@$current_epoch" +%F)"
     ;;
+  preprocess)
+    awk -F'\t' '
+    BEGIN {
+      last_epoch = 0
+      last_datetime = ""
+      last_duration = 0
+      last_task = ""
+      OFS = "\t"
+    }
+    {
+      epoch = $1
+      duration = epoch - last_epoch
+      datetime = strftime("%F %T", epoch)
+      task = $2
+
+      duration_human_readable = strftime("%H:%M:%S", duration, 1)
+
+      print last_epoch, last_datetime, duration, duration_human_readable, last_task
+
+      last_epoch = epoch
+      last_datetime = datetime
+      last_duration = duration
+      last_task = task
+    }
+    END {
+      epoch = $1
+      current_time = systime()
+      duration = current_time - epoch
+      datetime = strftime("%F %T", epoch)
+      task = $2
+      print epoch, datetime, duration, strftime("%H:%M:%S", duration, 1), task
+    }
+    ' "$filename"
+    ;;
   watch)
     n=1
 
