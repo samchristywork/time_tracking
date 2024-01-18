@@ -35,62 +35,32 @@ function print_task {
 }
 
 function show_tasks {
-  pattern=""
-  if [ $# -eq 1 ]; then
-    pattern="$1"
-  fi
-
-  last_task_time=""
-  last_task_name=""
-
-  total_time=0
-  matched_time=0
-
-  while read -r line; do
-    new_task_time=$(echo "$line" | cut -f1)
-    new_task_name=$(echo "$line" | cut -f2-)
-
-    matchespattern=1
-    if [ -n "$pattern" ]; then
-      if ! echo "$last_task_name" | grep -q "$pattern"; then
-        matchespattern=0
-      fi
-    fi
-
-    if [ -n "$last_task_time" ] && [ $matchespattern -eq 1 ]; then
-      print_task "$last_task_time" "$new_task_time" "$last_task_name"
-      matched_time=$((matched_time+new_task_time-last_task_time))
-    fi
-    if [ -n "$last_task_time" ]; then
-      total_time=$((total_time+new_task_time-last_task_time))
-    fi
-
-    last_task_time="$new_task_time"
-    last_task_name="$new_task_name"
-  done
-
-  matchespattern=1
-  if [ -n "$pattern" ]; then
-    if ! echo "$last_task_name" | grep -q "$pattern"; then
-      matchespattern=0
-    fi
-  fi
-  if [ $matchespattern -eq 1 ]; then
-    print_task "$last_task_time" "$(date +%s)" "$last_task_name"
-    matched_time=$((matched_time+$(date +%s)-last_task_time))
-  fi
-  total_time=$((total_time+$(date +%s)-last_task_time))
-
-  printf "Total: %s\n" "$(seconds_to_time $total_time)"
-  if [ -n "$pattern" ]; then
-    printf "Matched: %s\n" "$(seconds_to_time $matched_time)"
-    printf "Percent: %s%%\n" "$((matched_time*100/total_time))"
-    printf "Per day: %s\n" "$(seconds_to_time $((matched_time*86400/total_time)))"
-  fi
+  awk -F'\t' '
+    BEGIN {
+      OFS = "\t"
+      total_duration = 0
+    }
+    {
+      datetime = $2
+      duration_seconds = $3
+      duration_human = $4
+      task_name = $5
+      print datetime, duration_human, task_name
+      total_duration += duration_seconds
+    }
+    END {
+      days = int(total_duration / 86400)
+      if (days > 0) {
+        print "Total: "days":"strftime("%H:%M:%S", total_duration, 1)
+      } else {
+        print "Total: "strftime("%H:%M:%S", total_duration, 1)
+      }
+    }
+  ' | column -t -s $'\t'
 }
 
 if [ $# -eq 0 ]; then
-  show_tasks < "$filename"
+  "$0" preprocess | show_tasks
   exit 0
 fi
 
@@ -121,7 +91,7 @@ case "$1" in
     echo "$(date +%s)	$2" >> "$filename"
     ;;
   show)
-    tail "$filename" | show_tasks
+    "$0" preprocess | tail | show_tasks
     ;;
   search)
     if [ $# -ne 2 ]; then
