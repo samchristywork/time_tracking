@@ -99,7 +99,36 @@ case "$1" in
       exit 1
     fi
 
-    show_tasks "$2" < "$filename"
+    "$0" preprocess | awk -F'\t' '
+    BEGIN {
+      OFS = "\t"
+      matched_duration = 0
+      total_duration = 0
+    }
+    /'"$2"'/ {
+      datetime = $2
+      duration_seconds = $3
+      duration_human = $4
+      task_name = $5
+      print datetime, duration_human, task_name
+      matched_duration += duration_seconds
+    }
+    {
+      total_duration += $3
+    }
+    END {
+      days = int(total_duration / 86400)
+      print "Total: "days":"strftime("%H:%M:%S", total_duration, 1)
+
+      days = int(matched_duration / 86400)
+      print "Matched: "days":"strftime("%H:%M:%S", matched_duration, 1)
+
+      print "Percent: "matched_duration*100/total_duration"%"
+
+      days = total_duration / 86400
+      print "Per day: "strftime("%H:%M:%S", matched_duration/days, 1)
+    }
+  ' | column -t -s $'\t'
     ;;
   summary)
     low_cutoff=$(date +%s -d "today 00:00")
